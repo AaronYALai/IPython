@@ -1,0 +1,121 @@
+What makes Git repositories: index.gtnl, index.css..and hidden .git file (see by "ls -a". Containing config, objects...)
+
+Git repositories and directories
+Each Git repository is tied to a specific directory - the directory where you ran 
+- git init  (Commit history = 0)
+Only files from that directory (and subdirectories inside that directory) will be contained in that repository, and you can have different repositories in different directories.
+
+What happens when you initialize a repository? Why do you need to do it?
+Initialize empty Git repository in ./.git We need to do this actually make it a git repository => a .git dir with config file and other neceessary files.
+
+Choosing what changes to commit:
+Working directory => Staging area =>(single commit)=> Repository
+Add Untracked files into staging area: 
+- git add (files)
+If you accidentally add a file to the staging area, you can remove it using git reset. For example, if you accidentally add lesson_2_reflections.txt, but don’t want it to be committed yet, run 
+- git reset lesson_2_reflections.txt 
+and the file will be removed from the staging area, but it will still be in your working directory.
+
+How is the staging area different from the working directory and the repository? What value do you think it offers?
+Staging area is where all the changes and files are being traking by git but not be committed yet, so you lose all the changes when close your terminal. Working directory is normal OS directory and files but not being tracked by Git. Staging area creates a space for you to work on the files you want to and for one thing don't influence other normal files , for another thing you can control when to commit into the repository to save your changes. 
+
+The editor you chose will appear as soon as you run git commit and allow you to write a commit message. You can also specify a commit message via the command line by running 
+- git commit -m "Commit message" 
+instead of just 
+- git commit
+It's still a good idea to get an editor set up, since this will make it easier to write long commit messages that fully describe the change.
+
+- git diff
+show changes, Compares bettween working directory and staging area when you modify a file in working dir
+- git diff --staged
+Comparing changes between staging area and Repository (Changes in working dir files won't show up)
+- git reset --hard
+Discard all the changes in Staging area AND Working directory ! (git diff = nothing)
+
+Leave 'detached HEAD' state : Right now, your HEAD should still be 'detached' from Lesson 1 when you checked out an old commit. To fix that, run the command git checkout master.
+
+How can you use the staging area to make sure you have one commit per logical change?
+Only add one file to staging area at a time and commit it into repository
+
+Branches
+Until now, we have linear commit history. We want to do sth experimental but don't know if it will work. Make commit branches out into multiple versions. Create labels to your commits: Branches(ex. master)
+Combining two branches => Merge
+
+- git branch (name)
+To create new branch with name. (*master): * means your current branch => change it by 
+- git checkout (other branch) 
+Use ( - git branch ) to see the branches we have and the current branch
+
+What are some situations when branches would be helpful in keeping your history organized? How would branches help?
+If one wants to do some experimental changes to show to friends but not affecting its main work to develop the program, branches would help. By creating the new branch, you could do any changes to show to others while not affecting the original master branch that you can still go ahead to add other changes for other people. (Development branch and Work branch that never fail or special feature branches)
+
+Viewing the commit history: The full command Caroline types to see the visual representation of the commit history is 
+- git log --graph --oneline (master) (coins)
+=> Branch coins set up to track remote branch coins from origin (Remote branch: Branch create by others elsewhere)
+
+Reachability: 
+Commit from previous commit but not in new branch => cannot reach by any branch
+HEAD = Current commit, If you make a commit that are not reachable, you got the warning about "detached HEAD" : you would lose all the changes. 
+
+- git checkout -b (new branch)
+This is equivalent to create and switch(checkout) to that new branch: good for every time to add a new feature
+
+How do the diagrams help you visualize the branch structure?
+Diagrams can help one know the commit history, reachability, any merge or not in a more efficient way (graph) 
+
+Combine the coins and master branches => Merging files. Ex. Aaron: B D E , Season: A B C D -Merge-> If A is intentionally deletes bt Aaron showing up in the merged file would be frustrated: A, C, E = unknown; B, D = yes
+Need to know the original files, Original: A B D => A: no(delete by Aaron) , C: yes, E: yes
+
+If a branch is deleted and leaves some commits unreachable from existing branches, those commits will continue to be accessible by commit id, until Git’s garbage collection runs. This will happen automatically from time to time, unless you actively turn it off. You can also run this process manually with 
+- git gc
+
+Merge coins into master => master, can reach coins's commit by master now => Can delete coins branch. Then git log will show all commits which will be sorted by timestamp.
+
+- git show (commit id)
+Show the changes between the commit and its parent without knowing which one is its parent(Because marge two branch would confuse you to find its parent)
+
+- git branch -d (name)
+To delete a branch, ex. after a merge
+
+- git merge 
+will also include the "currently checked-out branch" in the merged version. So if you have branch1 checked out, and you run 
+( - git merge branch2 branch3 ) , the merged version will combine branch1 as well as branch2 and branch3. For this reason, you should always checkout one of the two branches you’re planning on merging before doing the merge. Which one you should check out depends on which branch label you want to point to the new commit. Also, since the two branches are merged, the order in which they are typed into the command line does not matter. 
+
+Merge conflict
+If you get a message like this
+
+Auto-merging game.js
+CONFLICT (content): Merge conflict in game.js
+Automatic merge failed; fix conflicts and then commit the result.
+
+To fix this, complete the following steps:
+ 1. Restore your files to their state before you started the merge by running 
+    - git merge --abort
+     Double check the state of your files. If you run git log while the master branch is checked out, you should see Caroline's "Add color" commit as the second-most-recent, and the most recent should be your commit fixing the bullet bug. If you use git diff to compare your commit to Caroline's, your commit should introduce the line this.delayBeforeBullet = 10; on line 424. The line should be indented to the same level as the line below it using only spaces (no tabs), and the line should have no spaces after it.
+ 3. Once your file is in the correct state, create a new commit with your changes.
+ 4. Try the merge again.
+
+Merge conflict (Newline characters between Windows and Unix systems)
+Context: Whenever we hit the "Enter" key on the keyboard, we are actually telling the computer to insert an invisible character into our text file to indicate to the computer that there should be a new line. Unix systems adds one character called the "line feed" character or LF or \n while Windows systems adds two characters, "carriage return" and "line feed" or CRLF or \r\n.
+
+Caroline's files have LF because her files were edited on Mac OSX, which uses LF. If a Windows user were to edit Caroline's files, the Windows text editor might convert all LF to CRLF to make editing files possible. When the Windows user merges her file with Caroline's files, a merge conflict will result due to the different LF and CRLF characters.
+
+To fix this, Windows users should set the global autocrlf attribute to true: 
+- git config --global core.autocrlf true
+More information can be found here: https://help.github.com/articles/dealing-with-line-endings/#platform-all
+
+What is the result of merging two branches together? Why do we represent it in the diagram the way we do?
+Adding the changes from two branches. Because the commits in two branches now can be reach from the new merged branch's tip.
+
+Merge Conflits
+Ex. Original(files): A B D, Aaron: A B' D, Season: A B" D => Merge?(B' B" unknown) (Change the same part )
+
+Update Easy Mode
+Motivation: Master has updated since the easy-mode branch was created. In this case, it has the addition of coins, which you might like to include in the easy-mode branch. In general, it’s very common that if you make a branch, either an experimental branch or to work on a new feature, you want to periodically merge master into that branch. This is because master usually contains the official version of the code, and it’s common to want experimental changes to include all of the changes to master.
+
+- git log --graph
+
+What are the pros and cons of Git’s automatic merging vs. always doing merges manually?
+pros: Make sure the new features are updated
+cons: one hasn't done modifying his new features and may cause merge conflicts 
+
