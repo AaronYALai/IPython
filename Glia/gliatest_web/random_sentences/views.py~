@@ -1,0 +1,43 @@
+from django.shortcuts import render
+from django.http import HttpResponse
+import random 
+from random_sentences.models import sentence
+
+
+def home(request):
+    S = random.choice(sentence.objects.all())
+    return render(request, "index.html", {'sentence': S})
+
+def home(request):
+    sentences = [
+        "Perfection is not attainable, but if we chase perfection we can catch excellence.",
+        "The best preparation for tomorrow is doing your best today.",
+        "Try to be a rainbow in someone's cloud.",
+        "Nothing is impossible, the word itself says 'I'm possible'!",
+        "I love machine learning and data mining!",
+        "We know what we are, but know not what we may be.",
+        "Why deep learning is so hardddd?",
+    ]
+    
+    output = """
+<!DOCTYPE HTML>
+<html style="height: 100%">
+<head>
+ <title>Glia Python Web Test by Django</title>
+</head>
+<body bgcolor="#000000" style="height: 100%">
+ <div class="wrapper" style="min-height: 100%; height: auto !important; height: 100%; margin: 0 auto -8em;">
+  <center style="color: #ffffff; padding-top: 200px; font-family: Courier; font-size: 24px; font-weight: bold;"><a href="/" rel="nofollow" style="text-decoration: none; color: #ffffff;">{sentence}</a></center>
+  <div class="push"></div>
+ </div>
+ <div class="footer">
+  <center style="color: #ffffff; font-family: Courier; font-size: 11px;">
+   <br /><br />&copy; No Copyright, free
+  </center>
+ </div>
+ </body>
+</html>
+    """.format(sentence=random.choice(sentences))
+    return HttpResponse(output)
+
+
